@@ -40,8 +40,8 @@ _curdir = os.path.join(os.getcwd(), os.path.dirname(__file__))
 settings_filename = os.path.join(os.path.dirname(__file__), '..', '..','settings.conf')
 
 config_parms = ConfigArgs( 'authentication',
-                           [ConfigArg('autobypass', abbrev='a', type=bool, help='True means skip the authentication screen'),
-                            ConfigArg('manualbypass', abbrev='m', type=bool, help='True means bypass=1 is allowed')
+                           [ConfigArg('autobypass', abbrev='a', help='True means skip the authentication screen'),
+                            ConfigArg('manualbypass', abbrev='m', help='True means bypass=1 is allowed')
                            ])
 
 settings = ConfigManager(config_parms)

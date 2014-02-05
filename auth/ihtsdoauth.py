@@ -33,14 +33,15 @@ import os
 
 from config.ConfigArgs import ConfigArg, ConfigArgs
 from config.ConfigManager import ConfigManager
+from rf2db.parameterparser.ParmParser import booleanparam
 
 
 _curdir = os.path.join(os.getcwd(), os.path.dirname(__file__))
 settings_filename = os.path.join(os.path.dirname(__file__), '..', '..','settings.conf')
 
 config_parms = ConfigArgs( 'authentication',
-                           [ConfigArg('autobypass', abbrev='a', help='True means skip the authentication screen'),
-                            ConfigArg('manualbypass', abbrev='m', help='True means bypass=1 is allowed')
+                           [ConfigArg('autobypass', abbrev='a', type=bool, help='True means skip the authentication screen'),
+                            ConfigArg('manualbypass', abbrev='m', type=bool, help='True means bypass=1 is allowed')
                            ])
 
 settings = ConfigManager(config_parms)
@@ -62,7 +63,7 @@ def check_auth(*args, **kwargs):
     """
 
     # Don't try if disabled
-    if settings.autobypass or kwargs.get('no_auth'):
+    if booleanparam.v(settings.autobypass, default=False) or kwargs.get('no_auth'):
         return
 
     # Check for already authenticated
@@ -71,7 +72,7 @@ def check_auth(*args, **kwargs):
 
     # If the kwargs include a bypass keyword, go on as well
     rqst = cherrypy.request.request_line.split()[1]
-    if settings.manualbypass and 'bypass' in urlparse.parse_qs(urlparse.urlsplit(rqst).query, True):
+    if booleanparam.v(settings.manualbypass, default=False) and 'bypass' in urlparse.parse_qs(urlparse.urlsplit(rqst).query, True):
         return
 
     # Not authorized redirect it to the authorization session

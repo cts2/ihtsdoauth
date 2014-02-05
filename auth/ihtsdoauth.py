@@ -100,7 +100,6 @@ class License(object):
     def submit(self, accept=None, cancel=None, token=None, fromPage=None):
         if accept and token == str(cherrypy.session.get(CHALLENGE, 'NoN')):
             cherrypy.session[SESSION_KEY] = cherrypy.session[CHALLENGE]
-            print cherrypy.session[FROM_PAGE]
             raise cherrypy.HTTPRedirect(cherrypy.session.pop(FROM_PAGE))
         else:
             raise cherrypy.HTTPRedirect("http://ihtsdo.org/license")

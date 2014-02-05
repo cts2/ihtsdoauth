@@ -34,6 +34,7 @@ import os
 from config.ConfigArgs import ConfigArg, ConfigArgs
 from config.ConfigManager import ConfigManager
 from rf2db.parameterparser.ParmParser import booleanparam
+from rf2db.utils import urlutil
 
 
 _curdir = os.path.join(os.getcwd(), os.path.dirname(__file__))
@@ -78,7 +79,8 @@ def check_auth(*args, **kwargs):
     # Not authorized redirect it to the authorization session
     cherrypy.session[CHALLENGE] = uuid.uuid4()
     cherrypy.session[FROM_PAGE] = rqst
-    raise cherrypy.HTTPRedirect(cherrypy.request.script_name + '/license')
+    urlutil.redirect('license')
+
 
 cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
 

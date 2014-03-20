@@ -78,7 +78,7 @@ def check_auth(*args, **kwargs):
 
     # Not authorized redirect it to the authorization session
     cherrypy.session[CHALLENGE] = uuid.uuid4()
-    cherrypy.session[FROM_PAGE] = ('' if rqst.startswith('/') else '/') + rqst
+    cherrypy.session[FROM_PAGE] = rqst
     urlutil.redirect('license')
 
 

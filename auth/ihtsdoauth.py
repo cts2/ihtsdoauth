@@ -31,8 +31,8 @@ import urlparse
 import uuid
 import os
 
-from config.ConfigArgs import ConfigArg, ConfigArgs
-from config.ConfigManager import ConfigManager
+from ConfigManager.ConfigArgs import ConfigArg, ConfigArgs
+from ConfigManager.ConfigManager import ConfigManager
 from rf2db.parameterparser.ParmParser import booleanparam
 from rf2db.utils import urlutil
 

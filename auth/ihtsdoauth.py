@@ -27,32 +27,32 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 import cherrypy
-import urlparse
 import uuid
 import os
+from urllib.parse import parse_qs, urlsplit
 
 from ConfigManager.ConfigArgs import ConfigArg, ConfigArgs
 from ConfigManager.ConfigManager import ConfigManager
-from rf2db.parameterparser.ParmParser import booleanparam
 from rf2db.utils import urlutil
-
+from rf2db.parameterparser.ParmParser import booleanparam
 
 _curdir = os.path.join(os.getcwd(), os.path.dirname(__file__))
-settings_filename = os.path.join(os.path.dirname(__file__), '..', '..','settings.conf')
+settings_filename = os.path.join(os.path.dirname(__file__), '..', '..', 'settings.conf')
 
-config_parms = ConfigArgs( 'authentication',
-                           [ConfigArg('autobypass', abbrev='a', help='True means skip the authentication screen'),
-                            ConfigArg('manualbypass', abbrev='m', help='True means bypass=1 is allowed')
+config_parms = ConfigArgs('authentication',
+                          [ConfigArg('autobypass', abbrev='a', help='True means skip the authentication screen'),
+                           ConfigArg('manualbypass', abbrev='m', help='True means bypass=1 is allowed')
                            ])
 
 settings = ConfigManager(config_parms)
-license_html = open(os.path.join(_curdir, '..','html','license.html')).read()
+license_html = open(os.path.join(_curdir, '..', 'html', 'license.html')).read()
 
 SESSION_KEY = '_copyright_ack'
-CHALLENGE   = '_challenge'
-FROM_PAGE   = '_from_page'
+CHALLENGE = '_challenge'
+FROM_PAGE = '_from_page'
 
-def check_auth(*args, **kwargs):
+
+def check_auth(*_, **kwargs):
     """ Check whether the user is authorized to use a page that has IHTSDO content.  A user can be authorized by:
         1. Setting tools.auth.no_auth to True in the class header
 
@@ -73,7 +73,7 @@ def check_auth(*args, **kwargs):
 
     # If the kwargs include a bypass keyword, go on as well
     rqst = cherrypy.request.request_line.split()[1]
-    if booleanparam.v(settings.manualbypass, default=False) and 'bypass' in urlparse.parse_qs(urlparse.urlsplit(rqst).query, True):
+    if booleanparam.v(settings.manualbypass, default=False) and 'bypass' in parse_qs(urlsplit(rqst).query, True):
         return
 
     # Not authorized redirect it to the authorization session
@@ -85,7 +85,6 @@ def check_auth(*args, **kwargs):
 cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
 
 
-
 class License(object):
     _cp_config = {
         'tools.auth.no_auth': True}
@@ -93,11 +92,11 @@ class License(object):
     @cherrypy.expose
     @cherrypy.tools.allow()
     def index(self):
-        return license_html % {'token':cherrypy.session.get(CHALLENGE, 'none')}
+        return license_html % {'token': cherrypy.session.get(CHALLENGE, 'none')}
 
     @cherrypy.expose
     @cherrypy.tools.allow(methods=['POST'])
-    def submit(self, accept=None, cancel=None, token=None, fromPage=None):
+    def submit(self, accept=None, token=None):
         if accept and token == str(cherrypy.session.get(CHALLENGE, 'NoN')):
             cherrypy.session[SESSION_KEY] = cherrypy.session[CHALLENGE]
             raise cherrypy.HTTPRedirect(cherrypy.session.pop(FROM_PAGE))
